@@ -6,6 +6,7 @@
 #include "pico/stdlib.h"
 #include "leos/purpleboard.h"
 #include "purpleboard.h"
+#include "cutdown.h"
 #include <stdio.h>
 
 void main() {
@@ -26,6 +27,8 @@ void main() {
         LOG_ERROR("The purpleboard sensors failed to initialize, not detected.");
     }
 
+    cutdown_init(&node);
+
     // After finishing initialization, set our mode to operational
     node.mode.value = uavcan_node_Mode_1_0_OPERATIONAL;
     // Turn on board LED to indicate setup success.
@@ -39,5 +42,6 @@ void main() {
         leos_cyphal_task(&node);
 
         purpleboard_task(pb, &node);
+        cutdown_task(&node);
     }
 }
