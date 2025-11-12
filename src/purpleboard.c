@@ -27,7 +27,7 @@ void publish_temperature(float temp_c, leos_cyphal_node_t *node) {
     uint8_t buffer[leos_sensors_Temp_0_1_SERIALIZATION_BUFFER_SIZE_BYTES_];
     size_t size = leos_sensors_Temp_0_1_SERIALIZATION_BUFFER_SIZE_BYTES_;
     if (leos_sensors_Temp_0_1_serialize_(&temp, buffer, &size)) {
-        LOG_WARNING("Failed to serialize the temperature message. Skipping.");
+        LOG_DEBUG("Failed to serialize the temperature message. Skipping.");
         return;
     }
     const struct CanardTransferMetadata md = {
@@ -42,7 +42,7 @@ void publish_temperature(float temp_c, leos_cyphal_node_t *node) {
         .size = size
     };
     if (leos_cyphal_push(node, &md, p) == LEOS_CYPHAL_OK) {
-        LOG_WARNING("Couldn't push temp msg");
+        LOG_DEBUG("Couldn't push temp msg");
         return;
     }
 }
@@ -60,7 +60,7 @@ void publish_pressure(float pressure_mb, leos_cyphal_node_t *node) {
     uint8_t buffer[leos_sensors_Pressure_0_1_SERIALIZATION_BUFFER_SIZE_BYTES_];
     size_t size = leos_sensors_Pressure_0_1_SERIALIZATION_BUFFER_SIZE_BYTES_;
     if (leos_sensors_Pressure_0_1_serialize_(&pressure, buffer, &size)) {
-        LOG_WARNING("Failed to serialize the pressure message. Skipping.");
+        LOG_DEBUG("Failed to serialize the pressure message. Skipping.");
         return;
     }
     const struct CanardTransferMetadata md = {
@@ -75,7 +75,7 @@ void publish_pressure(float pressure_mb, leos_cyphal_node_t *node) {
         .size = size
     };
     if (leos_cyphal_push(node, &md, p) == LEOS_CYPHAL_OK) {
-        LOG_WARNING("Couldn't push pressure msg");
+        LOG_DEBUG("Couldn't push pressure msg");
         return;
     }
 }
@@ -95,6 +95,10 @@ void purpleboard_task(leos_purpleboard_t *pb, leos_cyphal_node_t *node) {
         return;
     }
 
-    publish_temperature(data.temperature_c, node);
-    publish_pressure(data.pressure_mb, node);   
+    if (data.temperature_c != -1) {
+        publish_temperature(data.temperature_c, node);
+    }
+    if (data.pressure_mb != -1) {
+        publish_pressure(data.pressure_mb, node);
+    }
 }
