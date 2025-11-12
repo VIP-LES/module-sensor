@@ -4,6 +4,9 @@
 #include "leos/cyphal/node.h"
 #include "module_setup.h"
 #include "pico/stdlib.h"
+#include "leos/purpleboard.h"
+#include "purpleboard.h"
+#include <stdio.h>
 
 void main() {
     // --- INITIALIZE MODULE ---
@@ -17,6 +20,11 @@ void main() {
 
     // Your setup code goes here
 
+    leos_purpleboard_t *pb = NULL;
+    leos_purpleboard_result_t pb_err = leos_purpleboard_init(PB_I2C_BLOCK, PB_PIN_SDA, PB_PIN_SCL, &pb);
+    if (pb_err > PB_SENSOR_NO_DETECT) {
+        LOG_ERROR("The purpleboard sensors failed to initialize, not detected.");
+    }
 
     // After finishing initialization, set our mode to operational
     node.mode.value = uavcan_node_Mode_1_0_OPERATIONAL;
@@ -25,10 +33,11 @@ void main() {
 
     // --- MAIN LOOP ---
     LOG_INFO("Entering main loop...");
-    while (true) {
+    while (true)
+    {
         leos_mcp251xfd_task(&dev);
         leos_cyphal_task(&node);
 
-        // Your looping code goes here
+        purpleboard_task(pb, &node);
     }
 }

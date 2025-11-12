@@ -69,6 +69,7 @@ target_link_libraries(TEMPLATE_PICO
         leos_mcp251xfd
         leos_cyphal_transport_mcp251xfd
         leos_cyphal_node
+        leos_purpleboard
 )
 
 # Add the standard include files to the build
