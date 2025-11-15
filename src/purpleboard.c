@@ -5,9 +5,6 @@
 #include <leos/sensors/UVLight_0_1.h>
 #include <leos/sensors/AirQuality_0_1.h>
 
-#define PB_I2C_BLOCK i2c0
-#define PB_PIN_SDA 16
-#define PB_PIN_SCL 17
 #define PB_DATA_INTERVAL_MS 1000
 
 const char* location_name = "purpleboard";
