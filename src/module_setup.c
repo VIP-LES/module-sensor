@@ -22,7 +22,7 @@ int init_module(MCP251XFD* dev, leos_cyphal_node_t *node) {
     }
     leos_cyphal_transport_t transport = leos_cyphal_transport_mcp251xfd(dev);
     leos_cyphal_result_t can_result;
-    can_result = leos_cyphal_init(node, transport, 12);
+    can_result = leos_cyphal_init(node, transport, 10);
     if (can_result != LEOS_CYPHAL_OK)
     {
         LOG_ERROR("Failed to initialize Cyphal/Libcanard: %d", can_result);
