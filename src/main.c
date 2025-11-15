@@ -27,7 +27,6 @@ void main() {
         LOG_ERROR("The purpleboard sensors failed to initialize, not detected.");
     }
 
-    cutdown_init(&node);
 
     // After finishing initialization, set our mode to operational
     node.mode.value = uavcan_node_Mode_1_0_OPERATIONAL;
