@@ -23,7 +23,7 @@ void main() {
 
     leos_purpleboard_t *pb = NULL;
     leos_purpleboard_result_t pb_err = leos_purpleboard_init(PB_I2C_BLOCK, PB_PIN_SDA, PB_PIN_SCL, &pb);
-    if (pb_err > PB_SENSOR_NO_DETECT) {
+    if (pb_err == PB_SENSOR_NO_DETECT) {
         LOG_ERROR("The purpleboard sensors failed to initialize, not detected.");
     }
 
