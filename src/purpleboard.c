@@ -197,6 +197,9 @@ void purpleboard_task(leos_purpleboard_t *pb, leos_cyphal_node_t *node) {
         return;
     }
 
+    // Do nothing if purpleboard is not correctly setup
+    if (!purpleboard_initialized) return;
+
     static absolute_time_t next_run = 0;
     absolute_time_t now = get_absolute_time();
     if (now < next_run) {

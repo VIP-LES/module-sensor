@@ -8,3 +8,5 @@
 #define PB_DATA_INTERVAL_MS 1000
 
 void purpleboard_task(leos_purpleboard_t *pb, leos_cyphal_node_t *node);
+
+extern bool purpleboard_initialized;

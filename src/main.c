@@ -9,9 +9,12 @@
 #include "cutdown.h"
 #include <stdio.h>
 
+bool purpleboard_initialized = false;
+
 void main() {
     // --- INITIALIZE MODULE ---
     leos_log_init_console(ULOG_INFO_LEVEL);
+
     MCP251XFD dev;
     leos_cyphal_node_t node;
     if (init_module(&dev, &node) < 0) {
@@ -25,6 +28,10 @@ void main() {
     leos_purpleboard_result_t pb_err = leos_purpleboard_init(PB_I2C_BLOCK, PB_PIN_SDA, PB_PIN_SCL, &pb);
     if (pb_err == PB_SENSOR_NO_DETECT) {
         LOG_ERROR("The purpleboard sensors failed to initialize, not detected.");
+        // Set health to caution - sensors are not critical devices.
+        node.health.value = uavcan_node_Health_1_0_CAUTION;
+    } else {
+        purpleboard_initialized = true;
     }
 
 
