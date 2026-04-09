@@ -7,9 +7,8 @@ static bool start_cutdown = false;
 
 // State for non-blocking sequence
 static bool cutdown_running = false;
-static uint8_t cutdown_index = 0; // 0..3 for R1..R4
 static absolute_time_t cutdown_timeout = 0;
-#define CUTDOWN_DURATION_MS 20000ul
+#define CUTDOWN_DURATION_MS 3000ul
 
 void onCutdownRequest(struct CanardRxTransfer *transfer, void* ref) {
     leos_cyphal_node_t* node = (leos_cyphal_node_t*) ref;
@@ -66,6 +65,7 @@ void cutdown_start() {
     start_cutdown = true;
 }
 
+// For gunpowder cutdown, we close all relays for CUTDOWN_DURATION_MS
 void cutdown_task(leos_cyphal_node_t *node) {
     (void) node;
 
@@ -73,16 +73,14 @@ void cutdown_task(leos_cyphal_node_t *node) {
     if (start_cutdown && !cutdown_running) {
         start_cutdown = false; // consume request
         cutdown_running = true;
-        cutdown_index = 0;
 
-        // Ensure all off, then set first
-        gpio_put(R1, 0);
-        gpio_put(R2, 0);
-        gpio_put(R3, 0);
-        gpio_put(R4, 0);
+        // Turn on relays
         gpio_put(R1, 1);
+        gpio_put(R2, 1);
+        gpio_put(R3, 1);
+        gpio_put(R4, 1);
 
-        // set timeout for first relay
+        // set timeout to disable relays
         cutdown_timeout = make_timeout_time_ms(CUTDOWN_DURATION_MS);
     }
 
@@ -92,30 +90,15 @@ void cutdown_task(leos_cyphal_node_t *node) {
 
     // If current index duration elapsed, move to next
     if (now > cutdown_timeout) {
-        // turn off current
-        switch (cutdown_index) {
-            case 0: gpio_put(R1, 0); break;
-            case 1: gpio_put(R2, 0); break;
-            case 2: gpio_put(R3, 0); break;
-            case 3: gpio_put(R4, 0); break;
-        }
 
-        cutdown_index++;
-        if (cutdown_index >= 4) {
-            // finished
-            cutdown_running = false;
-            cutdown_index = 0;
-            LOG_DEBUG("Cutdown sequence complete");
-            return;
-        }
+        // Turn off relays
+        gpio_put(R1, 0);
+        gpio_put(R2, 0);
+        gpio_put(R3, 0);
+        gpio_put(R4, 0);
 
-        // start next relay and reset timeout
-        switch (cutdown_index) {
-            case 0: gpio_put(R1, 1); break;
-            case 1: gpio_put(R2, 1); break;
-            case 2: gpio_put(R3, 1); break;
-            case 3: gpio_put(R4, 1); break;
-        }
-        cutdown_timeout = make_timeout_time_ms(CUTDOWN_DURATION_MS);
+        // finished
+        cutdown_running = false;
+        LOG_DEBUG("Cutdown sequence complete");
     }
 }
